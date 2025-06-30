@@ -11,9 +11,13 @@ exports.getAllArticles = async (req, res) => {
 
 exports.createArticle = async (req, res) => {
   try {
-    const article = await Article.create(req.body);
+    const article = await Article.create({
+      ...req.body,
+      owner: req.user._id, //
+    });
     res.status(201).json(article);
   } catch (error) {
-    res.status(400).json({ message: "Error creating article" });
+    console.error("❌ Article creation error:", error);
+    res.status(400).json({ message: error.message, errors: error.errors });
   }
 };

@@ -4,6 +4,7 @@ const auth = require("../middlewares/authMiddleware");
 const { validateArticle } = require("../middlewares/validators");
 
 const router = express.Router();
+router.use(auth);
 
 router.get("/", auth, async (req, res) => {
   try {
@@ -18,12 +19,42 @@ router.get("/", auth, async (req, res) => {
 
 router.post("/", auth, validateArticle, async (req, res) => {
   try {
-    const article = await Article.create({ ...req.body, owner: req.user._id });
+    const {
+      keyword,
+      title,
+      content, // sent from frontend
+      date,
+      source,
+      link,
+      image,
+    } = req.body;
+
+    console.log("🖼️ Image received:", image);
+
+    const article = await Article.create({
+      keyword,
+      title,
+      text: content,
+      date,
+      source,
+      link,
+      image,
+      owner: req.user._id,
+    });
+
+    console.log("🧾 Final image saved:", article.image);
+
     res.status(201).json(article);
   } catch (error) {
-    res
-      .status(400)
-      .json({ message: "Error creating article", error: error.message });
+    console.error("❌ Validation failed:");
+    console.dir(error, { depth: null });
+    console.log("📦 Payload received:", req.body);
+    res.status(400).json({
+      message: "Validation failed",
+      error: error.message,
+      details: error.details || error.errors,
+      body: req.body,
+    });
   }
 });
 

@@ -19,15 +19,17 @@ const validateSignin = celebrate({
 
 // Article validation
 const validateArticle = celebrate({
-  [Segments.BODY]: Joi.object().keys({
-    title: Joi.string().required(),
-    content: Joi.string().required(),
-    source: Joi.string().optional(),
-    image: Joi.string().uri().optional(),
-    keyword: Joi.string().required(),
-    date: Joi.string().required(),
-    link: Joi.string().uri().required(),
-  }),
+  [Segments.BODY]: Joi.object()
+    .keys({
+      keyword: Joi.string().required(),
+      title: Joi.string().required(),
+      text: Joi.string().required(),
+      date: Joi.string().isoDate().required(),
+      source: Joi.string().required(),
+      link: Joi.string().uri().required(),
+      image: Joi.string().uri().required(),
+    })
+    .unknown(true),
 });
 
 module.exports = {
